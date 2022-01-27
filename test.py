@@ -18,7 +18,7 @@ def getHtml(url):
 def formatBrand(str):
     return str.replace(' ', '-').lower() + '.htm'
 
-
+## Getting brands to further search
 def getBrands():
     html_text = getHtml(URL + 'km0')
     soup = BeautifulSoup(html_text, 'lxml')
@@ -31,6 +31,7 @@ def batchStrRemove(str, remove_list):
         str = str.replace(remove, '')
     return str
 
+## Formatting car to be shown in the front and remove duplicate info
 def formatCarRow(car, brand):
     row = batchStrRemove(car.text, ['/t', '\n\n', brand, ' km', ' cv'])
     row = row.split('\n')[3:]
@@ -42,7 +43,7 @@ def formatCarRow(car, brand):
     row.append(car.find('img')['src'])
     return [s.strip() for s in row]
 
-
+## Get all cars from a brand
 def getCars(brand='wolkswagen', car_type='km0'):
     if car_type not in ['km0', 'coches-segunda-mano'] or brand not in getBrands():
         return []
@@ -61,6 +62,7 @@ if __name__ == '__main__':
     brands = getBrands()
     brands_to_URL = []
 
+    ## Getting all cars from all brands
     for brand in brands:
         cars += getCars(brand, 'km0')
 

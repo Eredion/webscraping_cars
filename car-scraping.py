@@ -34,7 +34,7 @@ def batchStrRemove(str, remove_list):
 def formatCarRow(car, brand):
     row = batchStrRemove(car.text, ['/t', '\n\n', brand, ' km', ' cv'])
     row = row.split('\n')[3:]
-    if (len(row) < 7 or len(row[1]) == 0):
+    if (len(row) != 7 or len(row[1]) == 0):
         return []
     row[1] = batchStrRemove(row[1], ['Diesel', 'Gasolina', 'Híbrido'])
     row[1] = row[1].replace('  ', ' ')
@@ -65,13 +65,16 @@ if __name__ == '__main__':
         cars += getCars(brand, 'km0')
 
     ## Saving km0 cars
-    df = pd.DataFrame(cars, columns=['Precio', 'Marca', 'Modelo', 'Motor', 'Potencia', 'Km', 'Ciudad', 'Año', 'Image'])
-    df.to_csv('cars-km0.csv')
+    df = pd.DataFrame(cars, columns=['Precio (€)', 'Marca', 'Modelo', 'Motor', 'Potencia (cv)', 'Km', 'Ciudad', 'Año', 'Image'])
+    df.to_csv('cars-km0.csv', index=False)
+    df.to_csv('/home/alvaro/Escritorio/webscraping_cars/cars-app/src/assets/cars-km0.csv', index=False)
+
 
     for brand in brands:
         cars += getCars(brand, 'coches-segunda-mano')
 
     ## Saving second-hand cars
-    df = pd.DataFrame(cars, columns=['Precio', 'Marca', 'Modelo', 'Motor', 'Potencia', 'Km', 'Ciudad', 'Año', 'Image'])
-    df.to_csv('cars-segunda-mano.csv')
+    df = pd.DataFrame(cars, columns=['Precio (€)', 'Marca', 'Modelo', 'Motor', 'Potencia (cv)', 'Km', 'Ciudad', 'Año', 'Image'])
+    df.to_csv('cars-segunda-mano.csv', index=False)
+    df.to_csv('/home/alvaro/Escritorio/webscraping_cars/cars-app/src/assets/cars-segunda-mano.csv', index=False)
 

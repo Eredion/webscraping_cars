@@ -1,0 +1,20 @@
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>#</th>
+    <th *ngFor="let str of carService.headers" scope="col">
+        {{str}}
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let car of carService.km0Cars; index as i">
+    <th scope="row">{{ i + 1 }}</th>
+    <td *ngFor="let field of car; index as iField">
+    <span *ngIf="iField != car.length - 1">{{field}}</span>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<router-outlet></router-outlet>
