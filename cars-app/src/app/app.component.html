@@ -2,19 +2,48 @@
   <thead>
   <tr>
     <th>#</th>
-    <th *ngFor="let str of carService.headers" scope="col">
+    <th *ngFor="let str of headers.slice(0, 5)" scope="col">
         {{str}}
     </th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let car of carService.km0Cars; index as i">
+  <tr class="car-row" *ngFor="let car of cars; index as i" [class.grey]="i % 2 != 0"
+    (click)=selectRow(cars[i]) (click)=open(content)>
     <th scope="row">{{ i + 1 }}</th>
-    <td *ngFor="let field of car; index as iField">
-    <span *ngIf="iField != car.length - 1">{{field}}</span>
+    <td *ngFor="let field of car.slice(0, 5); index as n">
+        {{field}}
     </td>
   </tr>
   </tbody>
 </table>
+
+<!--  Page selector -->
+<div class="d-flex justify-content-between p-2">
+    <ngb-pagination [collectionSize]="carSize" [(page)]="page" [pageSize]="pageSize"
+    (pageChange)="refreshCars()" [maxSize]="maxSize">
+    </ngb-pagination>
+</div>
+
+<!--  Modal with car details -->
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">{{selectedCar[0] + ' ' + selectedCar[1]}}</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="flex-cont">
+            <div *ngFor="let field of selectedCar.slice(2, (selectedCar.length -1)); index as i" class="el">
+                <b>{{headers[i + 2]}}:</b>
+                {{field}}
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <img class="car-img" src="{{selectedCar[(selectedCar.length - 1)]}}">
+    </div>
+  </ng-template>
 
 <router-outlet></router-outlet>

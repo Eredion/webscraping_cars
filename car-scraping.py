@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 from traceback import print_tb
-from unittest import skip, skipIf
-from urllib import request
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
@@ -14,11 +12,11 @@ def getHtml(url):
     r = requests.get(url)
     return r.text
 
-
+# Formating brand name to match URL
 def formatBrand(str):
     return str.replace(' ', '-').lower() + '.htm'
 
-
+# Get all brands to iterate through them
 def getBrands():
     html_text = getHtml(URL + 'km0')
     soup = BeautifulSoup(html_text, 'lxml')
@@ -26,11 +24,23 @@ def getBrands():
     brands = [brand.text for brand in brand_search]
     return brands
 
+
 def batchStrRemove(str, remove_list):
     for remove in remove_list:
         str = str.replace(remove, '')
     return str
 
+
+# Fixing "Coruña, A", "Palmas, Las"...
+def checkComplexCity(city):
+    split = city.split(',')
+    if len(split) == 1:
+        return city
+    else:
+        return split[1].strip()+ ' ' + split[0].strip()
+
+
+# Formating car data into row
 def formatCarRow(car, brand):
     row = batchStrRemove(car.text, ['/t', '\n\n', brand, ' km', ' cv'])
     row = row.split('\n')[3:]
@@ -38,11 +48,12 @@ def formatCarRow(car, brand):
         return []
     row[1] = batchStrRemove(row[1], ['Diesel', 'Gasolina', 'Híbrido'])
     row[1] = row[1].replace('  ', ' ')
+    row[5] = checkComplexCity(row[5])
     row.insert(1, brand)
     row.append(car.find('img')['src'])
     return [s.strip() for s in row]
 
-
+# Get all cars from a brand and type
 def getCars(brand='wolkswagen', car_type='km0'):
     if car_type not in ['km0', 'coches-segunda-mano'] or brand not in getBrands():
         return []
@@ -62,19 +73,11 @@ if __name__ == '__main__':
     brands_to_URL = []
 
     for brand in brands:
-        cars += getCars(brand, 'km0')
+        for type in ['km0', 'coches-segunda-mano']:
+            cars += getCars(brand, type)
 
-    ## Saving km0 cars
+    ## Saving cars in same folder and in angular/assets
     df = pd.DataFrame(cars, columns=['Precio (€)', 'Marca', 'Modelo', 'Motor', 'Potencia (cv)', 'Km', 'Ciudad', 'Año', 'Image'])
-    df.to_csv('cars-km0.csv', index=False)
-    df.to_csv('/home/alvaro/Escritorio/webscraping_cars/cars-app/src/assets/cars-km0.csv', index=False)
-
-
-    for brand in brands:
-        cars += getCars(brand, 'coches-segunda-mano')
-
-    ## Saving second-hand cars
-    df = pd.DataFrame(cars, columns=['Precio (€)', 'Marca', 'Modelo', 'Motor', 'Potencia (cv)', 'Km', 'Ciudad', 'Año', 'Image'])
-    df.to_csv('cars-segunda-mano.csv', index=False)
-    df.to_csv('/home/alvaro/Escritorio/webscraping_cars/cars-app/src/assets/cars-segunda-mano.csv', index=False)
-
+    df = df.reindex(columns=['Marca', 'Modelo', 'Motor', 'Potencia (cv)', 'Precio (€)', 'Km', 'Ciudad', 'Año', 'Image'])
+    df.to_csv('cars.csv', index=False)
+    df.to_csv('/home/alvaro/Escritorio/webscraping_cars/cars-app/src/assets/cars.csv', index=False)

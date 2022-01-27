@@ -1,0 +1,26 @@
+.grey {
+    background-color: #d3d3d3;
+}
+
+.car-row {
+    cursor: pointer;
+    &:hover {
+        transition: ease-in-out 0.01s;
+        background-color: rgb(180, 215, 226);
+    }
+}
+
+.car-img {
+    margin: 1em auto;
+}
+
+.flex-cont {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+}
+
+.el {
+    width: 40%;
+}
